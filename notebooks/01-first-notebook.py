@@ -38,7 +38,7 @@ chart is code a student pastes after running `uv add matplotlib`.
 
 import marimo
 
-__generated_with = "0.24.0"
+__generated_with = "0.24.2"
 app = marimo.App(width="medium", sql_output="pandas")
 
 
@@ -49,9 +49,17 @@ def _():
     return (mo,)
 
 
+@app.cell
+def _():
+    print ("my name is Victor")
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""# Your First Notebook""")
+    mo.md(r"""
+    # Your First Notebook
+    """)
     return
 
 
@@ -116,6 +124,29 @@ def _(mo):
     *The number in brackets is an **index**, and Python counts from zero, so
     `freight_charges[0]` is the first one.*
     """)
+    return
+
+
+@app.cell
+def _(freight_charges):
+    freight_charges[0]
+    return
+
+
+@app.cell
+def _(freight_charges):
+    len(freight_charges)
+    return
+
+
+@app.cell
+def _(freight_charges):
+    sum(freight_charges)
+    return
+
+
+@app.cell
+def _():
     return
 
 
