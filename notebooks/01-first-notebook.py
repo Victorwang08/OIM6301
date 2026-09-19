@@ -101,8 +101,7 @@ def _(mo):
 
 @app.cell
 def _():
-    freight_charges = [16.75, 22.25, 25.00, 20.25, 36.25]
-    freight_charges
+    freight_charges = [999.99, 22.25, 25.00, 20.25, 36.25]
     return (freight_charges,)
 
 
@@ -145,11 +144,6 @@ def _(freight_charges):
     return
 
 
-@app.cell
-def _():
-    return
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -175,6 +169,18 @@ def _(mo):
     there until you close the notebook, or `Ctrl+K` and search for undo.*
     """)
     return
+
+
+@app.cell
+def _(freight_charges):
+    total = sum(freight_charges)
+    return (total,)
+
+
+@app.cell
+def _():
+    total = 1
+    return (total,)
 
 
 @app.cell(hide_code=True)
@@ -235,6 +241,78 @@ def _(mo):
     return
 
 
+@app.cell
+def _(freight_charges):
+    sorted(freight_charges)
+    return
+
+
+@app.cell
+def _(freight_charges):
+    sorted(freight_charges, reverse=True)
+    return
+
+
+@app.cell
+def _(freight_charges):
+    sorted(freight_charges, reverse=False)
+    return
+
+
+@app.cell
+def _(freight_charges):
+    freight_charges[-1]
+    return
+
+
+@app.cell
+def _(freight_charges):
+    freight_charges[:3]
+    return
+
+
+@app.cell
+def _(orders):
+    orders[0]
+    return
+
+
+@app.cell
+def _(freight_charges):
+    freight_charges[0]
+    return
+
+
+@app.cell
+def _():
+    category="Confections"
+    return (category,)
+
+
+@app.cell
+def _(category):
+    len(category)
+    return
+
+
+@app.cell
+def _(orders):
+    sum(orders)
+    return
+
+
+@app.cell
+def _(orders):
+    orders * 2
+    return
+
+
+@app.cell
+def _(freight_charges, orders):
+    orders + freight_charges
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -275,6 +353,30 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    "16.75" + "22.25"
+    return
+
+
+@app.cell
+def _():
+    16.75 + "22.25"
+    return
+
+
+@app.cell
+def _():
+    type("16.75" + "22.25")
+    return
+
+
+@app.cell
+def _():
+    type(16.75 + 22.25)
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -309,6 +411,24 @@ def _(mo):
     return
 
 
+@app.cell
+def _(freight_charges):
+    freight_charges[0] > 20
+    return
+
+
+@app.cell
+def _(freight_charges):
+    freight_charges[-1] == max(freight_charges)
+    return
+
+
+@app.cell
+def _(freight_charges):
+    type(freight_charges[-1] == max(freight_charges))
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -322,6 +442,8 @@ def _(mo):
 @app.cell
 def _(freight_charges, orders):
     print(f"Order {orders[0]} paid ${freight_charges[0]:.2f} in freight.")
+    #f is to tell python that there are things that need to be be evaluated in {}. 
+    #.2f in "{freight_charges[0]:.2f}" is to tell python to show two decimals. even if it is interger.  
     return
 
 
@@ -344,6 +466,13 @@ def _(mo):
 
     Your sentence should show `$120.50` and `$24.10`. If it does not, the experiments above left something changed: check that `freight_charges` still starts with `16.75` and that your `total` cell is still there.
     """)
+    return
+
+
+@app.cell
+def _(freight_charges, total):
+    print(f"the total freight is {total:.2f} and the average charge is {total/len(freight_charges):.2f}.")
+    #When Victor was writing this by himself, he missed some details like ".". and forget total is already defined as the sum of freight_charges, so there is no need to write sum(total)
     return
 
 
@@ -397,6 +526,16 @@ def _(mo):
     return
 
 
+@app.cell
+def _(freight_charges):
+    below_25 = []
+    for freight in freight_charges:
+        if freight < 25:
+            below_25.append(freight)
+    below_25
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -435,6 +574,29 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    import pandsa
+    #can not find pandsa. it does not exist. python can not auto-correct typo. 
+    return
+
+
+@app.cell
+def _():
+    open("sales.csv")
+    #it is also something that does not exist. 
+    return
+
+
+app._unparsable_cell(
+    r"""
+    new_charges = [16.75, 22.25, 
+    # missing the closing bracket "]"
+    """,
+    name="_"
+)
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -444,6 +606,14 @@ def _(mo):
 
     `max(["9.50", "16.75", "22.25"])`
     """)
+    return
+
+
+@app.cell
+def _():
+    max(["9.50", "16.75", "22.25"])
+    # [] is list. 
+    # this is string, so python compare between 9, 1, 2. the first letter in each string
     return
 
 
@@ -493,6 +663,14 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    # 1. line 3
+    # 2. change line 1. inappropriate data is in line 1. line 3 reveals the mistake
+    # 3. change "pending " in line 1 into a interger or float. think and discuss with team what to do with it. 
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -519,6 +697,18 @@ def _(mo):
 
     The square brackets inside `_ax.bar(...)` are a **list comprehension**, which **iterates** over `orders` and turns each number into text.
     """)
+    return
+
+
+@app.cell
+def _(freight_charges, orders):
+    import matplotlib.pyplot as plt
+
+    _fig, _ax = plt.subplots(figsize=(6, 2.6))
+    _ax.bar([str(_o) for _o in orders], freight_charges)
+    _ax.set_ylabel("freight")
+    _fig
+
     return
 
 
