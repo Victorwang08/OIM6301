@@ -134,7 +134,7 @@ def _(freight_charges):
         freight_tax = charge * 0.0625
         total_charge = charge + freight_tax
         print(f'Total charge is ${total_charge:.2f}.')
-    return
+    return (charge,)
 
 
 @app.cell
@@ -148,7 +148,10 @@ def _(freight_charges):
 
 
 @app.cell
-def _():
+def _(charge, freight_charges):
+    for position, charges in enumerate(freight_charges):
+        print(position, charge)
+    # This is used for showing position of each item in the lsit. 
     return
 
 
@@ -300,7 +303,7 @@ def _(mo):
 
 @app.cell
 def _():
-    score = 33
+    score = 91
 
     if score >= 90:
         print("A")
@@ -308,21 +311,7 @@ def _():
         print("Pass")
     else:
         print("Fail")
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
+    # If there are two conditions that could be both true, it will run the first one. So it is important to sort your conditions.
     return
 
 
@@ -350,6 +339,47 @@ def _(mo):
 def _():
     statuses = ["shipped", "pending", "shipped", "cancelled", "shipped"]
     statuses
+    return (statuses,)
+
+
+@app.cell
+def _(statuses):
+    shipped_counts = 0
+    for statuse in statuses:
+        if statuse == "shipped":
+            shipped_counts += 1
+    print(shipped_counts)
+
+
+    # you can also use a more troditional way
+    #shipped_orders = []
+    #for statuse in statuses:
+    #   if statuse == "shipped":
+    #       shipped_orders.append(statuse)
+    #len(shipped_orders)
+    return (shipped_counts,)
+
+
+@app.cell
+def _(statuses):
+    print(statuses.count("shipped"))
+    #easiest and advanced way to do it.
+    return
+
+
+@app.cell
+def _(statuses):
+    unshipped_counts = 0
+    for statuse1 in statuses:
+        if statuse1 != "shipped":
+            unshipped_counts += 1
+    print(unshipped_counts)
+    return
+
+
+@app.cell
+def _(shipped_counts, statuses):
+    print(f"the percentage of shipped package is {shipped_counts/len(statuses)*100:.0f}%")
     return
 
 
@@ -376,9 +406,24 @@ def _(mo):
 
 @app.cell
 def _():
+    #order_lines = ["notebook", "pen"]
+    #order_lines.append(["stapler", "tape"])
+    #len(order_lines)
+    # the len is 3 because what added into the list is one list. not 2 strings. 
+    return
+
+
+@app.cell
+def _():
     order_lines = ["notebook", "pen"]
-    order_lines.append(["stapler", "tape"])
+    order_lines.extend(["stapler", "tape"])
     len(order_lines)
+    # append add the whole list as one items. extend add items as diffenrent individuals.  use extend with a list. use append with individual items.
+    return
+
+
+@app.cell
+def _():
     return
 
 
@@ -408,7 +453,16 @@ def _():
     tickers = ["NVDA", "AAPL", "MSFT"]
     print(sorted(tickers))
     print(tickers.sort())
-    tickers
+    print(tickers)
+    #sorted(tickers) will not touch the original list. it copy one and sort it and show it to you.
+    #tickers.sort()is different, it sort in the original list. after this, the sequence in the original list will be changed.
+    return (tickers,)
+
+
+@app.cell
+def _(tickers):
+    print(sorted(tickers,reverse=True))
+    #prints the tickers largest first, without changing tickers again
     return
 
 
@@ -442,9 +496,16 @@ def _(mo):
 @app.cell
 def _():
     prices = [12.50, 8.00, 19.99]
-    sale_prices = prices
+    sale_prices = prices[:]
     sale_prices.append(4.99)
     prices
+    #sale_prices = prices is just two name for one list. but sale_prices = prices[:] is two list and the list sale_prices will copy all from list prices because there is no specification in the slice
+    return prices, sale_prices
+
+
+@app.cell
+def _(prices, sale_prices):
+    print(prices is sale_prices)
     return
 
 
