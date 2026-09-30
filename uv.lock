@@ -981,6 +981,7 @@ dependencies = [
     { name = "marimo", extra = ["recommended"] },
     { name = "matplotlib" },
     { name = "pandas" },
+    { name = "requests" },
 ]
 
 [package.metadata]
@@ -988,6 +989,7 @@ requires-dist = [
     { name = "marimo", extras = ["recommended"], specifier = ">=0.24.2" },
     { name = "matplotlib", specifier = ">=3.11.2" },
     { name = "pandas", specifier = ">=3.0.6" },
+    { name = "requests", specifier = ">=2.34.2" },
 ]
 
 [[package]]
