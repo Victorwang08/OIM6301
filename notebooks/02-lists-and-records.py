@@ -223,8 +223,13 @@ def _(mo):
 
 @app.cell
 def _():
-    charges = [16.75, 22.25, 25.00, 20.25, 36.25]
-    charges
+    # this will add all in the list together, because you defined total first
+    # if you define total after the for loop. it will give you the last number in the list. refer to python tutor for details
+    return
+
+
+@app.cell
+def _():
     return
 
 
