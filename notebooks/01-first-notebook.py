@@ -377,6 +377,15 @@ def _():
     return
 
 
+@app.cell
+def _():
+    x=10
+    y=x/2
+    print(y)
+    # y is a float, not a int even it should be. if you want int, print y=x//2
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -708,7 +717,6 @@ def _(freight_charges, orders):
     _ax.bar([str(_o) for _o in orders], freight_charges)
     _ax.set_ylabel("freight")
     _fig
-
     return
 
 
