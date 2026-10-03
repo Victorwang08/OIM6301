@@ -104,6 +104,7 @@ def _(mo):
 @app.cell
 def _(goog_quote):
     goog_quote.get("Volume", 0)
+    # With .get(), you're saying "look for this key — but if it isn't there, don't stop, just hand me this fallback value instead." The 0 you wrote is that fallback.
     return
 
 
@@ -194,6 +195,50 @@ def _():
     return (closing_prices,)
 
 
+@app.cell
+def _(closing_prices):
+    print(f'the price for AAPL is {closing_prices["AAPL"]}')
+    return
+
+
+@app.cell
+def _(closing_prices):
+    print(closing_prices["TSLA"])
+    return
+
+
+@app.cell
+def _(closing_prices):
+    print(closing_prices.get("TSLA"))
+    return
+
+
+@app.cell
+def _(closing_prices):
+    above_200 = []
+
+    for ticker, price in closing_prices.items():
+        if price > 200:
+            above_200.append(ticker)
+
+    print(above_200)
+    return (price,)
+
+
+@app.cell
+def _(closing_prices, price):
+    highest_price = float("-inf")
+    highest_ticker = None
+
+    for ticker1, price1 in closing_prices.items():
+        if price > highest_price:
+            highest_price = price1
+            highest_ticker = ticker1
+
+    print(highest_ticker)
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -219,6 +264,22 @@ def _():
     ]
     len(ship_countries)
     return (ship_countries,)
+
+
+@app.cell
+def _(ship_countries):
+    country_counts = {}
+
+    for country in ship_countries:
+        country_counts[country] = country_counts.get(country, 0) + 1
+
+    print(country_counts)
+    return
+
+
+@app.cell
+def _():
+    return
 
 
 @app.cell(hide_code=True)
