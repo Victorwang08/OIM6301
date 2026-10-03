@@ -87,11 +87,11 @@ def _():
 @app.cell
 def _(cost, tax):
 
-    total_cost = float(cost) + float(tax)
-    print(f'The cost is ${float(cost):.2f}. Total cost is ${total_cost:.2f}.')
+    total_cost_1 = float(cost) + float(tax)
+    print(f'The cost is ${float(cost):.2f}. Total cost is ${total_cost_1:.2f}.')
     # f is used to tell python there is things need to run, not just print what i typed.
     # :.2f mean 2 decimals.
-    # total_cost is already a float as defined in line 2. but cost is still a string. so need to put float in line 3
+    # total_cost_1 is already a float as defined in line 2. but cost is still a string. so need to put float in line 3
     return
 
 
@@ -623,6 +623,14 @@ def _(mo):
     return
 
 
+@app.cell
+def _(first_order):
+    first_order["freight"]
+    first_order[0]
+    # there 2 are wrong.
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -674,6 +682,29 @@ def _():
     return (orders,)
 
 
+@app.cell
+def _(orders):
+    orders[0]
+    #it is a table, but also a list. each item is a record.
+    return
+
+
+@app.cell
+def _(orders):
+    orders[0]["ShipCountry"]
+    #you can be specific about what you want
+    return
+
+
+@app.cell
+def _(orders):
+    for order in orders:
+        if order["ShippedDate"] is None:
+            print(order["OrderID"])
+    # Play around it like a list
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -712,6 +743,37 @@ def _(mo):
     return
 
 
+@app.cell
+def _(orders):
+    total_freight = 0
+    for o1 in orders:
+        total_freight = total_freight + o1["Freight"]
+    print(f"{total_freight:.2f}")
+    return
+
+
+@app.cell
+def _(orders):
+    no_ship_count = 0
+    for o2 in orders:
+        if o2["ShippedDate"] is None:
+            no_ship_count = no_ship_count + 1
+    no_ship_count
+    return
+
+
+@app.cell
+def _(orders):
+    largest_order = None
+    largest_freight = 0
+    for o3 in orders:
+        if o3["Freight"] > largest_freight:
+            largest_freight = o3["Freight"]
+            largest_order = o3
+    largest_order
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -737,6 +799,20 @@ def _(mo):
     *(Replace this line with your own sentence. If this cell shows you code instead of
     text, use the cell menu to turn it into a markdown cell.)*
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    “One row is one order that a customer placed on a specific date, shipped to a specific country and city.”
+    """)
+    return
+
+
+@app.cell
+def _(orders):
+    len(orders)
     return
 
 
@@ -773,6 +849,56 @@ def _():
         {"Symbol": "TSLA", "Shares": 150, "Price": 255.70},
     ]
     portfolio
+    return (portfolio,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    for each holding. multiply Shares and Price. and add all together
+    """)
+    return
+
+
+@app.cell
+def _(portfolio):
+    total_cost = 0
+    for holding in portfolio:
+        total_cost = total_cost + holding["Shares"] * holding["Price"]
+    print(f'The total cost is ${total_cost:.2f}')
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    A small catering company is billing a client for an event. Each item on the invoice has a quantity and a price per unit.
+    """)
+    return
+
+
+@app.cell
+def _():
+    invoice = [
+        {"Item": "Chairs", "Quantity": 50, "UnitPrice": 3.50},
+        {"Item": "Tables", "Quantity": 10, "UnitPrice": 12.00},
+        {"Item": "Linens", "Quantity": 20, "UnitPrice": 5.25},
+        {"Item": "Centerpieces", "Quantity": 10, "UnitPrice": 18.00},
+    ]
+    return (invoice,)
+
+
+@app.cell
+def _(invoice):
+    total_invoice_cost = 0
+    for item in invoice:
+        total_invoice_cost = total_invoice_cost + item["Quantity"] * item["UnitPrice"]
+    total_invoice_cost
     return
 
 
@@ -824,6 +950,32 @@ def _(mo):
         _where = f"could not write into {_data_dir.name}/: {_error}"
 
     _where
+    return
+
+
+@app.cell
+def _(mo):
+    portfolio_file = mo.notebook_dir().parent / "data" / "portfolio.csv"
+
+    # open() gives back a file object; the "with" block closes the file for you when it ends
+    with open(portfolio_file, "r") as _file:
+        _lines = _file.readlines()
+
+    # the first line is the header ("name,shares,price"), so the data starts at index 1
+    _data_lines = _lines[1:]
+
+    print(f"{'name':<6}{'shares':>10}{'price':>10}")
+
+    _total_cost = 0
+    for _line in _data_lines:
+        _line = _line.strip()  # strip() removes the invisible newline at the end of the line
+        _name, _shares, _price = _line.split(",")  # split(",") breaks the line into pieces at each comma
+        _shares = int(_shares)  # the file stores every value as text, so shares has to be turned back into a number
+        _price = float(_price)  # same here, but price can have a decimal, so it becomes a float, not an int
+        print(f"{_name:<6}{_shares:>10}{_price:>10.2f}")
+        _total_cost = _total_cost + _shares * _price
+
+    print(f"Total cost: ${_total_cost:.2f}")
     return
 
 
