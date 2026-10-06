@@ -166,7 +166,7 @@ def _(annual_rates, loan_amount):
             "total_interest": _total_interest,
             "schedule": _schedule
         }
-    return
+    return (loan_results,)
 
 
 @app.cell
@@ -185,7 +185,38 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(loan_results):
+    # Print a summary table
+    print("LOAN COMPARISON (USD)")
+    print(f"{'Years':<8}{'Monthly payment':>20}{'Total interest':>20}")
+
+    for _years, _result in loan_results.items():
+        print(
+            f"{_years:<8}"
+            f"{_result['monthly_payment']:>20,.2f}"
+            f"{_result['total_interest']:>20,.2f}"
+        )
+
+    # Print the monthly schedule for each loan
+    for _years, _result in loan_results.items():
+        print()
+        print(f"{_years}-YEAR LOAN SCHEDULE (USD)")
+        print(
+            f"{'Month':<8}"
+            f"{'Payment':>14}"
+            f"{'Interest':>14}"
+            f"{'Principal':>14}"
+            f"{'Balance':>16}"
+        )
+
+        for _row in _result["schedule"]:
+            print(
+                f"{_row['month']:<8}"
+                f"{_row['payment']:>14,.2f}"
+                f"{_row['interest']:>14,.2f}"
+                f"{_row['principal_paid']:>14,.2f}"
+                f"{_row['balance']:>16,.2f}"
+            )
     return
 
 
@@ -200,7 +231,23 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(loan_amount, loan_results):
+    for _years, _result in loan_results.items():
+
+        # Add up the principal repaid each month
+        _total_principal = 0
+
+        for _row in _result["schedule"]:
+            _total_principal = _total_principal + _row["principal_paid"]
+
+        _total_principal = round(_total_principal, 2)
+
+        # Show both numbers and compare them
+        print(f"{_years}-year loan")
+        print(f"Total principal repaid: ${_total_principal:,.2f}")
+        print(f"Original loan amount: ${loan_amount:,.2f}")
+        print(f"Do they match? {_total_principal == loan_amount}")
+        print()
     return
 
 
@@ -216,6 +263,12 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    # The agent gave me the calculation code in Section 4. Before accepting it, I asked why the balance started at the loan amount, how it decreased each month, why the loop used months + 1, and how the last payment cleared the balance. After understanding these steps, I kept the calculation code unchanged. In Section 6, I checked that the principal repaid added up to the original $400,000 for both loans, and both checks returned True.
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -223,6 +276,64 @@ def _(mo):
 
     *Take at least one step past the main task, in any direction, and use your agent as much as you like. It does not have to work. State what you tried, what you found, and where it is in this notebook.*
     """)
+    return
+
+
+@app.cell
+def _():
+    extra_payment = 200
+    return (extra_payment,)
+
+
+@app.cell
+def _(annual_rates, extra_payment, loan_amount, loan_results):
+    print("PAYING EXTRA EACH MONTH")
+    print(f"Extra monthly payment: ${extra_payment:,.2f}")
+    print()
+
+    for _years, _annual_rate in annual_rates.items():
+
+        # Start again with the original loan amount
+        _balance = loan_amount
+        _monthly_rate = _annual_rate / 12
+        _month = 0
+        _total_interest = 0
+
+        # Add the extra amount to the regular monthly payment
+        _new_payment = round(
+            loan_results[_years]["monthly_payment"] + extra_payment,
+            2
+        )
+
+        # Keep going while there is money left to repay
+        while _balance > 0:
+            _month = _month + 1
+            _interest = round(_balance * _monthly_rate, 2)
+
+            # Do not pay more than the remaining balance plus interest
+            _payment = min(
+                _new_payment,
+                round(_balance + _interest, 2)
+            )
+
+            _principal_paid = round(_payment - _interest, 2)
+            _balance = round(_balance - _principal_paid, 2)
+            _total_interest = round(_total_interest + _interest, 2)
+
+        # Compare with the original loan
+        _months_saved = _years * 12 - _month
+        _interest_saved = round(
+            loan_results[_years]["total_interest"] - _total_interest,
+            2
+        )
+
+        print(f"{_years}-year loan")
+        print(f"New regular monthly payment: ${_new_payment:,.2f}")
+        print(f"Months needed to repay: {_month}")
+        print(f"Months saved: {_months_saved}")
+        print(f"Total interest with extra payments: ${_total_interest:,.2f}")
+        print(f"Interest saved: ${_interest_saved:,.2f}")
+        print()
     return
 
 
