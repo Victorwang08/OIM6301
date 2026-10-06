@@ -88,7 +88,14 @@ def _(mo):
 @app.cell
 def _():
     # Your inputs.
-    return
+    loan_amount = 400000
+    return (loan_amount,)
+
+
+@app.cell
+def _():
+    annual_rates = {30: 0.0703, 15: 0.0642}
+    return (annual_rates,)
 
 
 @app.cell(hide_code=True)
@@ -98,6 +105,67 @@ def _(mo):
 
     Add as many cells as you need. Try each step yourself before you ask your agent, and commit as you go.
     """)
+    return
+
+
+@app.cell
+def _(annual_rates, loan_amount):
+    # Store the results for both loans
+    loan_results = {}
+
+    # Calculate each loan separately
+    for _years, _annual_rate in annual_rates.items():
+
+        # Convert years to months and annual rate to monthly rate
+        _months = _years * 12
+        _monthly_rate = _annual_rate / 12
+
+        # Calculate the regular monthly payment
+        _monthly_payment = round(
+            loan_amount * _monthly_rate
+            / (1 - (1 + _monthly_rate) ** (-_months)),
+            2
+        )
+
+        # Start this loan with the full balance
+        _balance = loan_amount
+        _total_interest = 0
+        _schedule = []
+
+        # Calculate one month at a time
+        for _month in range(1, _months + 1):
+
+            # Interest is based on the balance still owed
+            _interest = round(_balance * _monthly_rate, 2)
+
+            # Adjust the final payment to pay off the loan
+            if _month == _months:
+                _payment = round(_balance + _interest, 2)
+            else:
+                _payment = _monthly_payment
+
+            # Find how much of the payment repays principal
+            _principal_paid = round(_payment - _interest, 2)
+
+            # Update the balance and total interest
+            _balance = round(_balance - _principal_paid, 2)
+            _total_interest = round(_total_interest + _interest, 2)
+
+            # Save this month's results as one row
+            _schedule.append({
+                "month": _month,
+                "payment": _payment,
+                "interest": _interest,
+                "principal_paid": _principal_paid,
+                "balance": _balance
+            })
+
+        # Save the finished results for this loan
+        loan_results[_years] = {
+            "monthly_payment": _monthly_payment,
+            "total_interest": _total_interest,
+            "schedule": _schedule
+        }
     return
 
 
