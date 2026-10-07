@@ -103,7 +103,7 @@ def _(mo):
 
 @app.cell
 def _(goog_quote):
-    goog_quote.get("Volume", 0)
+    goog_quote.get("Volume",0)
     # With .get(), you're saying "look for this key — but if it isn't there, don't stop, just hand me this fallback value instead." The 0 you wrote is that fallback.
     return
 
@@ -122,10 +122,33 @@ def _(mo):
 
 @app.cell
 def _(goog_quote):
+    for i111 in goog_quote.items():
+        print(i111)
+    #.items is to put the combination together. without it, when you use for loop. it only return key which might not be waht we want. so item can make for loop view both key can correspodant value as a whole combination. 
+    return
+
+
+@app.cell
+def _(goog_quote):
     quote_lines = []
     for _field, _value in goog_quote.items():
         quote_lines.append(f"{_field}: {_value}")
     quote_lines
+    # '_field''_value' is the name you created, you can change to whatever you want. 
+    # you can use onlu one name for the things in the records. For example, for 1 in goog_quote.items(). but we choose to use two because we want more flexibility. we can do print it as _value, _field to reverse it. we can also print(f"{_field} 的内容是 {_value}")
+    return
+
+
+@app.cell
+def _():
+    # 直接循环字典，每次只取出一个键，这是正常行为。
+    # 使用 .items()，每次取出一对对应的键和值。
+    # 可以用一个变量接住整对，也可以用两个变量分别接住。
+    # 两个变量中，第一个接键，第二个接值；变量名可以自己起。
+    # 分别接住后，方便控制输出，例如：
+    # print(_value, _field)
+    # print(f"{_field} 的内容是 {_value}")
+    # f-string 生成字符串，append 把字符串添加到列表末尾。
     return
 
 
@@ -222,20 +245,21 @@ def _(closing_prices):
             above_200.append(ticker)
 
     print(above_200)
-    return (price,)
+    return
 
 
 @app.cell
-def _(closing_prices, price):
+def _(closing_prices):
     highest_price = float("-inf")
     highest_ticker = None
 
     for ticker1, price1 in closing_prices.items():
-        if price > highest_price:
+        if price1 > highest_price:
             highest_price = price1
             highest_ticker = ticker1
 
     print(highest_ticker)
+    # -int 是负无穷
     return
 
 
@@ -357,6 +381,7 @@ def _(mo):
 @app.cell
 def _():
     divmod(250, 12)
+    # 250个苹果，一箱12个，给你商和余数。
     return
 
 
@@ -402,6 +427,7 @@ def _():
     client_trades = ["MSFT", "AAPL", "GOOG", "MSFT", "GOOG", "TSLA", "MSFT"]
     traded_tickers = set(client_trades)
     len(client_trades), len(traded_tickers), sorted(traded_tickers)
+    # Set will not show repeated value. only distinct. and there is no order. if you use traded_tickers[0], it will be an error
     return (traded_tickers,)
 
 

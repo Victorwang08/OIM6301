@@ -134,7 +134,7 @@ def _(freight_charges):
         freight_tax = charge * 0.0625
         total_charge = charge + freight_tax
         print(f'Total charge is ${total_charge:.2f}.')
-    return (charge,)
+    return
 
 
 @app.cell
@@ -148,9 +148,9 @@ def _(freight_charges):
 
 
 @app.cell
-def _(charge, freight_charges):
+def _(freight_charges):
     for position, charges in enumerate(freight_charges):
-        print(position, charge)
+        print(position, charges)
     # This is used for showing position of each item in the lsit. 
     return
 
@@ -748,7 +748,7 @@ def _(orders):
     total_freight = 0
     for o1 in orders:
         total_freight = total_freight + o1["Freight"]
-    print(f"{total_freight:.2f}")
+    print(f"total freight is ${total_freight:.2f}")
     return
 
 
@@ -757,7 +757,7 @@ def _(orders):
     no_ship_count = 0
     for o2 in orders:
         if o2["ShippedDate"] is None:
-            no_ship_count = no_ship_count + 1
+            no_ship_count +=1
     no_ship_count
     return
 
