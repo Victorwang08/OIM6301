@@ -168,7 +168,11 @@ def _():
 
     status_counts = {}
     for _status in week_statuses:
-        status_counts[_status] = status_counts.get(_status, 0) + 1
+        # status_counts[_status] = status_counts.get(_status, 0) + 1
+        if _status in status_counts:
+            status_counts[_status] += 1
+        else:
+            status_counts[_status] = 1
 
     status_counts
     return
@@ -601,6 +605,7 @@ def _(requests):
         "&temperature_unit=fahrenheit&wind_speed_unit=mph"
         "&timezone=America/New_York"
     )
+    print(babson_url)
     babson_reply = requests.get(babson_url, timeout=10)
     babson_reply.status_code
     return (babson_reply,)
