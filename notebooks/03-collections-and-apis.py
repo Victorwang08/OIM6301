@@ -605,9 +605,16 @@ def _(requests):
         "&temperature_unit=fahrenheit&wind_speed_unit=mph"
         "&timezone=America/New_York"
     )
+    # not only a web we need. but also have specific request in it. like give me the wind, temp.... of this location.
     print(babson_url)
     babson_reply = requests.get(babson_url, timeout=10)
+    # request is a tool to help us send a request to wed server. 
+    # .get is a method to send the request the specific server. follow by the url, and timeout which is to limit how long we wait for a response before giving up.
     babson_reply.status_code
+    # this is to check if the request is successful. 200 means success, 400 or 404 means error.
+    babson_data = babson_reply.json()
+    # .json is a method to convert the response into a python dictionary.
+    print(babson_data)
     return (babson_reply,)
 
 
@@ -622,6 +629,7 @@ def _(mo):
 @app.cell
 def _(babson_reply):
     babson_weather = babson_reply.json()
+    #  .json() converts the response content into a python dictionary we can work with. typically a dict or list depend on the data. 
     babson_weather
     return (babson_weather,)
 
@@ -668,6 +676,7 @@ def _(requests):
         timeout=10,
     )
     bad_latitude_reply.status_code, bad_latitude_reply.json()
+    # you typed a latitude that does not exit. so it is wrong
     return
 
 
@@ -688,6 +697,7 @@ def _(requests):
         timeout=10,
     )
     misspelled_reply.status_code, misspelled_reply.json()
+    # you miss spelled Wellesley. and there will be a lot of Wellesley. so you can specified the state country or latitude....
     return (misspelled_reply,)
 
 
