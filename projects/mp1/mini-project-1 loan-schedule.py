@@ -169,11 +169,6 @@ def _(annual_rates, loan_amount):
     return (loan_results,)
 
 
-@app.cell
-def _():
-    return
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
