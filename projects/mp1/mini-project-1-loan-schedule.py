@@ -180,6 +180,12 @@ def _(mo):
 
 
 @app.cell
+def _():
+    #For a $400,000 loan, the 30-year option offers a lower monthly payment ($2,669.27 versus $3,466.86), while the 15-year option saves $336,906.69 in total interest, helping homebuyers choose between lower monthly payments and lower overall interest costs.
+    return
+
+
+@app.cell
 def _(loan_results):
     # Print a summary table
     print("LOAN COMPARISON (USD)")
