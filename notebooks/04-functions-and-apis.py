@@ -192,6 +192,26 @@ def _(mo):
     return
 
 
+@app.function
+def count_shares(portfolio):
+    total = 0
+    for symbol, shares, price in portfolio:
+        total = total + shares
+    return total
+
+
+@app.cell
+def _(holdings):
+    count_shares(holdings)
+    return
+
+
+@app.cell
+def _(retirement_holdings):
+    count_shares(retirement_holdings)
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -199,6 +219,36 @@ def _(mo):
 
     Copy `count_shares` into a new cell under a new name, and put `print(...)` where the `return` was. Call it and keep the result in a name. In a markdown cell under it, answer: what does that name hold, and what could the next cell do with it?
     """)
+    return
+
+
+@app.cell
+def _(holdings):
+    def count_shares_print(portfolio):
+        total = 0
+        for symbol, shares, price in portfolio:
+            total = total + shares
+        print(total)
+
+    saved_result = count_shares_print(holdings)
+    return count_shares_print, saved_result
+
+
+@app.cell
+def _(count_shares_print, holdings):
+    count_shares_print(holdings)
+    return
+
+
+@app.cell
+def _(saved_result):
+    print(saved_result)
+    return
+
+
+@app.cell
+def _():
+    # print(total) 只是把结果显示在屏幕上，不会把这个结果交给调用函数的变量；函数没有 return 时，变量得到的是 None。return total 会把结果交回程序，可以用变量保存，之后继续计算。
     return
 
 
@@ -260,6 +310,7 @@ def _(requests):
         timeout=10,
     )
     norfolk_reply.status_code, norfolk_reply.url
+    # params is telling requests to add a requirement to the URL, it is not a name we define.
     return (norfolk_reply,)
 
 
@@ -275,8 +326,21 @@ def _(mo):
 
 @app.cell
 def _(norfolk_reply):
+    norfolk_reply.json()
+    return
+
+
+@app.cell
+def _(norfolk_reply):
     norfolk_page = norfolk_reply.json()
     norfolk_page["pagination"]
+    # Pagination（分页）
+    #"page":1 当前是第一页
+    #"per_page":50 一页最多50条record
+    #"total":28 一共28个record
+    #"pages":1 总共只有一页
+    #"has_next":False 没有下一页
+    #"has_prev":False 没有上一页
     return (norfolk_page,)
 
 
@@ -337,6 +401,45 @@ def _(mo):
     return
 
 
+@app.cell
+def _(requests):
+    def get_temperature(town):
+        # 搜索城市，只取一个结果
+        place_reply = requests.get(
+            "https://geocoding-api.open-meteo.com/v1/search",
+            params={"name": town, "count": 1},
+            timeout=10
+        )
+
+        place_data = place_reply.json()
+        place = place_data["results"][0]
+
+        # 取出纬度和经度
+        latitude = place["latitude"]
+        longitude = place["longitude"]
+
+        # 查询这个位置的当前华氏温度
+        weather_reply = requests.get(
+            "https://api.open-meteo.com/v1/forecast",
+            params={
+                "latitude": latitude,
+                "longitude": longitude,
+                "current": "temperature_2m",
+                "temperature_unit": "fahrenheit"
+            },
+            timeout=10
+        )
+
+        weather_data = weather_reply.json()
+
+        # 把温度数字返回
+        return weather_data["current"]["temperature_2m"]
+
+
+    get_temperature("Wellesley")
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -346,6 +449,16 @@ def _(mo):
 
     *Check yourself: Dover, Wellesley, Cohasset, Needham, Westwood.*
     """)
+    return
+
+
+@app.cell
+def _(requests):
+    reply = requests.get("https://oim.zhili.dev/ma/towns", params = {"county": "Norfolk","sort": 'income', "order": "desc", "page": 1, "per_page":5}, timeout=10)
+    data = reply.json()
+
+    for town in data["items"]:
+        print(town["name"])
     return
 
 
@@ -362,6 +475,37 @@ def _(mo):
 
     **Going further.** Write `town_history(name)`, which takes a town's name, makes both requests, and returns the history.
     """)
+    return
+
+
+@app.cell
+def _(requests):
+    _reply = requests.get("https://oim.zhili.dev/ma/towns", params = {"name": "Wellesley"}, timeout=10)
+    _data = _reply.json()
+
+    print(_data["items"][0]["dor_code"])
+    return
+
+
+@app.cell
+def _(requests):
+    _history_reply = requests.get(
+        f"https://oim.zhili.dev/ma/towns/317/history",
+        params={
+            "from_year": 2026,
+            "to_year": 2026
+        },
+        timeout=10
+    )
+
+    _history_data = _history_reply.json()
+    print(_history_data)
+    # from_year, to_year 是固定的API的参数,不能修改哦。
+    return
+
+
+@app.cell
+def _():
     return
 
 
