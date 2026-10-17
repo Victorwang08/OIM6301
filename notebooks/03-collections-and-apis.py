@@ -300,6 +300,7 @@ def _(ship_countries):
 
     for country in ship_countries:
         country_counts[country] = country_counts.get(country, 0) + 1
+        # []指定的是key。country_counts.get(country, 0) 是用国家名称这个 key 去查对应的 value（次数），不是返回国家名称；找不到就返回 0。第一次遇到 France，返回 0，加 1 后存成 "France": 1；第二次遇到 France，取出已存的 value 1，加 1 后更新为 "France": 2。等号右边取旧次数并加 1，左边把新次数存回字典
 
     print(country_counts)
     return
@@ -507,6 +508,15 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    # 1. List, because the customer can add, remove, and reorder the items.
+    # 2. Set, because each customer should appear only once.
+    # 3. Dictionary, because the product name is the key and the units sold are the value.
+    # 4. Tuple, because the shipment details must not change once recorded.
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -527,6 +537,12 @@ def _(mo):
 
 @app.cell
 def _():
+    # I would prefer a list of dictionaries because named keys like “Shares” and “Price” make the data easier to understand and use. Dictionaries also allow me to update the values if needed
+    return
+
+
+@app.cell
+def _():
     holdings = [
         ("AAPL", 100, 173.93),
         ("MSFT", 50, 319.53),
@@ -536,6 +552,31 @@ def _():
         ("TSLA", 150, 255.70),
     ]
     holdings
+    return (holdings,)
+
+
+@app.cell
+def _(holdings):
+    _total_cost = 0
+
+    for _symbol, _shares, _price in holdings:
+        _total_cost = _total_cost + _shares * _price
+
+    print(f"Total cost: ${_total_cost:,.2f}")
+    return
+
+
+@app.cell
+def _(holdings):
+    _costs = {}
+
+    for _symbol, _shares, _price in holdings:
+        _costs[_symbol] = _shares * _price
+
+    _most_expensive = max(_costs, key=_costs.get)
+
+    print(_costs)
+    print(f"The most expensive holding is {_most_expensive}: ${_costs[_most_expensive]:,.2f}")
     return
 
 
@@ -741,11 +782,36 @@ def _(mo):
     return
 
 
+@app.cell
+def _(babson_weather):
+    _wind_speed = babson_weather["current"]["wind_speed_10m"]
+    _wind_unit = babson_weather["current_units"]["wind_speed_10m"]
+
+    print(f"The wind speed at Babson is {_wind_speed} {_wind_unit}.")
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     **F · Another town.** Search for `Wellesley` the way the misspelled search did, with the correct spelling. Take the first place out of `results`, then its `latitude`, `longitude` and `admin1`. *Check yourself: latitude 42.29649, in Massachusetts.*
     """)
+    return
+
+
+@app.cell
+def _(requests):
+    _reply = requests.get(
+        "https://geocoding-api.open-meteo.com/v1/search?name=Wellesley&count=1",
+        timeout=10
+    )
+
+    _data = _reply.json()
+    _place = _data["results"][0]
+
+    print(_place["latitude"])
+    print(_place["longitude"])
+    print(_place["admin1"])
     return
 
 
