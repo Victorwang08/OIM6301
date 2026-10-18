@@ -523,6 +523,7 @@ def _(mo):
 def _(requests):
     state_first_page = requests.get("https://oim.zhili.dev/ma/towns", timeout=10).json()
     len(state_first_page["items"]), state_first_page["pagination"]
+    # len只有50，就是一页的record，不是全部records，你可以要求每页多给点（看下方例子）
     return
 
 
@@ -542,6 +543,7 @@ def _(requests):
         timeout=10,
     )
     too_big_reply.status_code, too_big_reply.json()
+    # 可以要求一页多给点，但最多100，这个太多了，422就是拒绝了你的请求
     return
 
 
@@ -564,8 +566,14 @@ def _(requests):
             timeout=10,
         )
         return page_reply.json()
-
+    # this way you can choose page you want.
     return (get_page,)
+
+
+@app.cell
+def _(get_page):
+    print(get_page(1))
+    return
 
 
 @app.cell
@@ -587,6 +595,45 @@ def _(mo):
 
     **Going further.** Which town has the highest average single-family tax bill in the state, and which the lowest?
     """)
+    return
+
+
+@app.cell
+def _(requests):
+    def get_all_towns():
+        # 先读取第 1 页
+        reply = requests.get(
+            "https://oim.zhili.dev/ma/towns",
+            params={"page": 1},
+            timeout=10
+        )
+        data = reply.json()
+
+        # 保存第 1 页的城镇，并取得总页数
+        all_towns = data["items"]
+        pages = data["pagination"]["pages"]
+
+        # 读取第 2 页到最后一页
+        for page in range(2, pages + 1):
+            reply = requests.get(
+                "https://oim.zhili.dev/ma/towns",
+                params={"page": page},
+                timeout=10
+            )
+            data = reply.json()
+            all_towns.extend(data["items"])
+    # append 会把list作为一个整体添加进去，extend 会把list中的每个元素依次添加进去，所以这里用 extend
+
+        return all_towns
+
+
+    towns = get_all_towns()
+    print(len(towns))
+    return
+
+
+@app.cell
+def _():
     return
 
 
