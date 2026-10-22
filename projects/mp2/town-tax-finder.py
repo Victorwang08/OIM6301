@@ -391,6 +391,10 @@ def _():
 
 @app.cell
 def _():
+    # Prediction:
+    # I will lower tax_limit_dollars from 8000 to 6000.
+    # I expect the number of qualifying towns to decrease from 12 to 5.
+    # Malden should still have the lowest average annual tax bill.
     return
 
 
