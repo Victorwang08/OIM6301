@@ -10,7 +10,7 @@ def _():
     import polars as pl
     import requests
 
-    return (mo,)
+    return mo, pl, requests
 
 
 @app.cell(hide_code=True)
@@ -77,6 +77,16 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    county = "Middlesex"
+    budget_dollars = 700000
+    tax_limit_dollars = 8000
+    fiscal_year = 2026
+    api_base = "https://oim.zhili.dev"
+    return budget_dollars, county, fiscal_year, tax_limit_dollars
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
@@ -86,6 +96,133 @@ def _(mo):
     to collect your data into a result table.
     """)
     return
+
+
+@app.cell
+def _(budget_dollars, county, fiscal_year, requests, tax_limit_dollars):
+    # Define a function to get all towns in the county.
+    def get_towns(county_name):
+        towns = []
+        page = 1
+
+        while True:
+            response = requests.get(
+                "https://oim.zhili.dev/ma/towns",
+                params={
+                    "county": county_name,
+                    "per_page": 100,
+                    "page": page
+                },
+                timeout=30
+            )
+
+            # Report an error if the HTTP request fails.
+            # 如果网站请求失败，程序在这里停止并报告问题。
+            response.raise_for_status()
+
+            # Convert the JSON response into a Python dictionary.
+            # 把网站返回的 JSON 转换成 Python 字典。
+            data = response.json()
+
+            # Use extend to add each town separately.
+            # extend 把这一页的城镇逐个加入名单，
+            # 避免用 append 把整页列表作为一个项目加入。
+            towns.extend(data["items"])
+
+            # Stop the loop if there are no more pages.
+            if not data["pagination"]["has_next"]:
+                break
+
+            # Otherwise, move to the next page.
+            page = page + 1
+
+        # Double-check that we have all towns.
+        if len(towns) != data["pagination"]["total"]:
+            raise ValueError(
+                "Town list incomplete. Check the request and run again."
+            )
+
+        return towns
+
+
+    # Define a function to get town information for a given year.
+    def get_year_data(town_code, year):
+        response = requests.get(
+            f"https://oim.zhili.dev/ma/towns/{town_code}/history",
+            params={
+                "from_year": year,
+                "to_year": year
+            },
+            timeout=30
+        )
+
+        response.raise_for_status()
+        data = response.json()
+
+        # Find the record for the requested fiscal year.
+        # 找到与指定年份一致的记录。
+        for record in data["years"]:
+            if record["fiscal_year"] == year:
+                return record
+
+        # Return None if the requested year is not available.
+        # 如果找不到，返回 None，表示没有该年份的数据。
+        return None
+
+
+    # Get all towns and filter them.
+    towns = get_towns(county)
+
+    # Store towns that meet both limits.
+    results = []
+
+    # Store towns that cannot be compared because of missing data.
+    # 保存缺少数据、无法判断的城镇。
+    missing_towns = []
+
+    for town in towns:
+        # Use the town code to request data for the selected year.
+        record = get_year_data(town["dor_code"], fiscal_year)
+
+        # If the year is missing, record the town name and skip it.
+        if record is None:
+            missing_towns.append(town["name"])
+            continue
+
+        # Read the average home value, residential tax rate,
+        # and average annual tax bill from the same year's record.
+        home_value = record["average_single_family_value_dollars"]
+        tax_rate = record["residential_rate_per_thousand"]
+        tax_bill = record["average_single_family_bill_dollars"]
+
+        # Skip incomplete records instead of treating missing values as 0.
+        if home_value is None or tax_rate is None or tax_bill is None:
+            missing_towns.append(town["name"])
+            continue
+
+        # Add the town only if it meets BOTH limits.
+        # 平均房屋价值不超过预算，且平均年度税单低于上限。
+        if home_value <= budget_dollars and tax_bill < tax_limit_dollars:
+            results.append({
+                "Town": town["name"],
+                "Average home value ($)": home_value,
+                "Tax rate ($ per $1,000)": tax_rate,
+                "Average annual bill ($)": tax_bill
+            })
+
+
+    # Show how many towns were checked, how many qualified,
+    # and any missing data.
+    print(
+        f"Checked {len(towns)} towns in {county} County "
+        f"for FY{fiscal_year}."
+    )
+    print(f"Found {len(results)} towns that meet both limits.")
+
+    if len(missing_towns) > 0:
+        print("Missing data: " + ", ".join(missing_towns))
+
+    return (results,)
 
 
 @app.cell(hide_code=True)
@@ -101,12 +238,64 @@ def _(mo):
 
 
 @app.cell
-def _():
-    # TODO: print the result table with columns lined up, e.g.
-    # for row in results:
-    #     print(f"{row['town']:<15} {row['value']:>12,.0f} {row['tax_rate']:>8}")
+def _(budget_dollars, county, fiscal_year, pl, results, tax_limit_dollars):
+    # Create the summary and table.
+    if len(results) > 0:
+        # Sort the results by annual tax bill, lowest first.
+        # 按平均年度税单从低到高排序。
+        result_table = pl.DataFrame(results).sort(
+            "Average annual bill ($)"
+        )
 
-    # TODO: print the one-sentence answer with an f-string
+        # Print the column headings with fixed widths.
+        # < 表示左对齐，> 表示右对齐，数字表示这一列占多少个字符。
+        print(
+            f"{'Town':<20}"
+            f"{'Home value ($)':>18}"
+            f"{'Rate ($/1,000)':>18}"
+            f"{'Annual bill ($)':>18}"
+        )
+
+        # Print a dividing line.
+        print("-" * 74)
+
+        # Print each town as one row.
+        # named=True 让我们用列名读取每一行的数据。
+        for _row in result_table.iter_rows(named=True):
+            print(
+                f"{_row['Town']:<20}"
+                f"{_row['Average home value ($)']:>18,.0f}"
+                f"{_row['Tax rate ($ per $1,000)']:>18.2f}"
+                f"{_row['Average annual bill ($)']:>18,.0f}"
+            )
+
+        # Get the first row: the qualifying town with the lowest bill.
+        cheapest = result_table.row(0, named=True)
+
+        # Print a blank line before the conclusion.
+        print()
+
+        # Print one sentence that updates when the inputs or data change.
+        # 用 f-string 打印一句包含实际数字的结论。
+        print(
+            f"In FY{fiscal_year}, {len(results)} towns in {county} County "
+            f"have an average home value at or below ${budget_dollars:,.0f} "
+            f"and an average annual tax bill below ${tax_limit_dollars:,.0f}; "
+            f"among these qualifying towns, {cheapest['Town']} has the "
+            f"lowest average annual bill of "
+            f"${cheapest['Average annual bill ($)']:,.0f}, "
+            f"with an average home value of "
+            f"${cheapest['Average home value ($)']:,.0f}."
+        )
+
+    else:
+        # Print a message if no towns qualify.
+        print(
+            f"In FY{fiscal_year}, no towns with complete data in "
+            f"{county} County have both an average home value at or below "
+            f"${budget_dollars:,.0f} and an average annual tax bill "
+            f"below ${tax_limit_dollars:,.0f}."
+        )
     return
 
 
