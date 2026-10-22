@@ -81,7 +81,7 @@ def _(mo):
 def _():
     county = "Middlesex"
     budget_dollars = 700000
-    tax_limit_dollars = 8000
+    tax_limit_dollars = 6000
     fiscal_year = 2026
     api_base = "https://oim.zhili.dev"
     return budget_dollars, county, fiscal_year, tax_limit_dollars
@@ -398,6 +398,16 @@ def _():
     return
 
 
+@app.cell
+def _():
+    # Actual result:
+    # After changing the limit to 6000 and rerunning the notebook,
+    # 5 towns qualified instead of 12.
+    # Malden still had the lowest average annual bill at $4,952.
+    # This matched my prediction.
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
@@ -408,6 +418,42 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    # Rank the same towns by tax rate in place of the bill. Does the order change, and why?
+    return
+
+
+@app.cell
+def _(results):
+    # This function returns a town's tax rate.
+    def get_tax_rate(town_record):
+        return town_record["Tax rate ($ per $1,000)"]
+
+
+    # Sort the existing results by tax rate, from lowest to highest.
+    # results 是前面已经筛选好的城镇名单。
+    # key=get_tax_rate 告诉 Python：用税率排序。
+    towns_by_tax_rate = sorted(results, key=get_tax_rate)
+
+
+    # Print the column headings.
+    print(f"{'Town':<20}{'Tax rate':>15}{'Annual bill ($)':>20}")
+
+
+    # Read and print one town at a time.
+    for _town in towns_by_tax_rate:
+
+        # Get the three values we want to display.
+        _name = _town["Town"]
+        _rate = _town["Tax rate ($ per $1,000)"]
+        _bill = _town["Average annual bill ($)"]
+
+        # Print one row, keeping the columns aligned.
+        print(f"{_name:<20}{_rate:>15.2f}{_bill:>20,.0f}")
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
@@ -415,6 +461,12 @@ def _(mo):
 
     TODO: About how many hours this project took you outside class, as one number. It is not graded.
     """)
+    return
+
+
+@app.cell
+def _():
+    # Around 5 hours in total. It is actually quick for AI to write the code and it is also easy to verify it. However, it takes time to unserstand the code AI give you. I know it is correct, but i need time to understand what each line does.
     return
 
 
