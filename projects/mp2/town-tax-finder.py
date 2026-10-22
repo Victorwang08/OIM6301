@@ -296,7 +296,7 @@ def _(budget_dollars, county, fiscal_year, pl, results, tax_limit_dollars):
             f"${budget_dollars:,.0f} and an average annual tax bill "
             f"below ${tax_limit_dollars:,.0f}."
         )
-    return
+    return (cheapest,)
 
 
 @app.cell(hide_code=True)
@@ -317,11 +317,20 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
+def _(cheapest):
+    # Check the cheapest town's bill using home value × tax rate ÷ 1,000.
+    print(f"Calculated bill: ${cheapest['Average home value ($)'] * cheapest['Tax rate ($ per $1,000)'] / 1000:,.2f}")
+    print(f"API bill: ${cheapest['Average annual bill ($)']:,.2f}")
+    return
+
+
+@app.cell
 def _():
-    # TODO: write the code that checks a number a second way, and print both numbers, e.g.
-    # print(f"from API total: {api_total}")
-    # print(f"from my sum:   {my_sum}")
+    # There is a 39 cent difference because the API reports the bill in whole dollars. 
+    # Displaying it with two decimal places only adds ".00"; it does not add precision. 
+    # In this check, $4,952.388 rounds to $4,952, matching the API bill, 
+    # the small difference is consistent with rounding to whole dollars.
     return
 
 
@@ -339,6 +348,14 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    # The code part, My agent got it right the first time. I checked in Section 6 by multiplying the average home value by the tax rate and dividing by 1,000. The calculated amount was $4,952.39, which matches the API bill of $4,952 when rounded to the nearest dollar.
+
+    # Another thing is my agent initially used mo.ui.table() to display the results which I never seen this way of printing and the result does not match the instruction. Instructions in Section 5 required print and f-strings with aligned columns, so I asked the agent to revise the output code.
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
@@ -353,6 +370,27 @@ def _(mo):
 
     Make the change, run it, and write what happened and whether it matched.
     """)
+    return
+
+
+@app.cell
+def _():
+    # Function 1: get_towns(county_name)
+    # Input: the name of a county, such as "Middlesex".
+    # Output: a list of all towns in that county.
+    # It reads every page and checks that the number of towns is complete.
+    # I asked why use.extend instead of .append, and noticed It adds each town to the list instead of adding the whole page as one item.
+
+    # Function 2: get_year_data(town_code, year)
+    # Inputs: a town's code and the fiscal year.
+    # Output: that town's record for the selected year,
+    # or None if the year is not available.
+    # I asked about record["residential_rate_per_thousand"] because i do not see this key in the website and i noticed that This field comes from the history endpoint, not the town-list endpoint.
+    return
+
+
+@app.cell
+def _():
     return
 
 
