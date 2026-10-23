@@ -139,13 +139,16 @@ def _(csv, ma_towns, mo):
     ]
 
     ma_towns_csv = mo.notebook_dir().parent / "data" / "ma-towns.csv"
+    #文件name是ma-towns.csv，存到data这个文件夹里。mo.notebook_dir().parent的意思是获取当前notebook所在目录的父目录
     ma_towns_csv.parent.mkdir(exist_ok=True)
-
+    #看看文件夹在不在，不在就创建一个，mkdir是创建文件夹。exist_ok=True的意思是如果文件夹已经存在，不要报错
     with open(ma_towns_csv, "w", newline="", encoding="utf-8") as _file:
+    # w是write，newline里面什么没有，空格都没有，因为csv会自动处理换行，就交给csv即可，encoding用utf-8编码保存文件（常见的规则）
         _writer = csv.DictWriter(_file, fieldnames=csv_columns, extrasaction="ignore")
+    #csv.DictWriter就是个工具，写成csv文件的工具，extraaction = "ignore"是说如果有多余的info，忽略别报错。
         _writer.writeheader()
+    #column name是第一行，就是表头
         _writer.writerows(ma_towns)
-
     ma_towns_csv.name
     return (ma_towns_csv,)
 
@@ -179,6 +182,15 @@ def _(mo):
 @app.cell
 def _(towns_from_file):
     towns_from_file[0]["population"], int(towns_from_file[0]["population"])
+    #上一段code就是找出一行作为例子，我们发现数字部分也是string，要改
+    for _town in towns_from_file:
+        _town["population"] = int(_town["population"])
+        _town["income_per_capita_dollars"] = int(_town["income_per_capita_dollars"])
+        _town["average_single_family_value_dollars"] = int(_town["average_single_family_value_dollars"])
+        _town["average_single_family_bill_dollars"] = int(_town["average_single_family_bill_dollars"])
+
+    # 显示第一个城镇，检查转换后的结果
+    towns_from_file[0]
     return
 
 
@@ -211,6 +223,23 @@ def _(towns_from_file):
                 county_counts[county] = 1
 
     county_counts
+    return (county_counts,)
+
+
+@app.cell
+def _(county_counts):
+    total_million_dollar_towns = 0
+    for c in county_counts:
+        total_million_dollar_towns += county_counts[c]
+
+    top_county = None
+    top_count = 0
+    for c in county_counts:
+        if county_counts[c] > top_count:
+            top_county = c
+            top_count = county_counts[c]
+
+    print(f"There are {total_million_dollar_towns} million-dollar towns, and {top_county} has the most, with {top_count}.")
     return
 
 
@@ -244,6 +273,7 @@ def _(mo):
 @app.cell
 def _(town_table):
     town_table.schema, town_table.shape
+    # schema就是列出这个表的data type。.shape is the number of rows and columns.
     return
 
 
@@ -335,6 +365,41 @@ def _(mo):
     return
 
 
+@app.cell
+def _(pl, town_table):
+    # Group towns by county and count the towns in each county.
+    (
+        town_table
+        .group_by("county")
+        .agg(pl.len().alias("towns"))
+        .sort("towns", descending=True)
+    )
+    return
+
+
+@app.cell
+def _(ma_counties, pl):
+    # Turn the server's county records into a table.
+    pl.DataFrame(ma_counties)
+    return
+
+
+@app.cell
+def _(pl, town_table):
+    (
+        town_table
+        # Keep towns with more than 50,000 people.
+        .filter(pl.col("population") > 50_000)
+
+        # Sort by average single-family tax bill, highest first.
+        .sort("average_single_family_bill_dollars", descending=True)
+
+        # Keep the first five towns.
+        .head(5)
+    )
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -353,7 +418,7 @@ def _(mo, town_table):
         f"""
         SELECT county, COUNT(*) AS towns
         FROM town_table
-        WHERE average_single_family_value_dollars >= 1000000
+        WHERE average_single_family_value_dollars >= 2000000
         GROUP BY county
         ORDER BY towns DESC
         """
@@ -378,6 +443,12 @@ def _(mo):
 
     **Going further.** Write a SQL query of your own on `town_table`, and check its answer in polars.
     """)
+    return
+
+
+@app.cell
+def _():
+    # Raising from $1,000,000 to $2,000,000 can only decrease each county's qualifying town count or leave it unchanged. No county's count  increase. Counties with no qualifying towns will disappear from the filtered results.
     return
 
 
@@ -431,6 +502,49 @@ def _(mo):
 
     **Going further.** Color the bars or dots by a column with `color=`, and explain what the colors add.
     """)
+    return
+
+
+@app.cell
+def _():
+    #Which five towns with more than 50,000 people have the highest average single-family property tax bills?
+    return
+
+
+@app.cell
+def _(alt, mo, pl, town_table):
+     # Keep towns with more than 50,000 people.
+    top_five_bills = (
+        town_table
+        .filter(pl.col("population") > 50_000)
+        .sort("average_single_family_bill_dollars", descending=True)
+        .head(5)
+    )
+
+    # Draw a horizontal bar chart.
+    top_five_bill_chart = mo.ui.altair_chart(
+        top_five_bills.plot.bar(
+            y=alt.Y(
+                "name",
+                sort="-x",
+                title="Town"
+            ),
+            x=alt.X(
+                "average_single_family_bill_dollars",
+                title="Average annual single-family property tax bill ($)",
+                axis=alt.Axis(format="$,.0f")
+            )
+        ).properties(
+            title="Top 5 property tax bills among towns with over 50,000 residents"
+        )
+    )
+
+    top_five_bill_chart
+    return
+
+
+@app.cell
+def _():
     return
 
 
