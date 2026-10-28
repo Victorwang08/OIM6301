@@ -513,31 +513,31 @@ def _():
 
 @app.cell
 def _(alt, mo, pl, town_table):
-     # Keep towns with more than 50,000 people.
+    # Keep towns with more than 50,000 people.
     top_five_bills = (
-        town_table
-        .filter(pl.col("population") > 50_000)
-        .sort("average_single_family_bill_dollars", descending=True)
-        .head(5)
-    )
-
-    # Draw a horizontal bar chart.
-    top_five_bill_chart = mo.ui.altair_chart(
-        top_five_bills.plot.bar(
-            y=alt.Y(
-                "name",
-                sort="-x",
-                title="Town"
-            ),
-            x=alt.X(
-                "average_single_family_bill_dollars",
-                title="Average annual single-family property tax bill ($)",
-                axis=alt.Axis(format="$,.0f")
-            )
-        ).properties(
-            title="Top 5 property tax bills among towns with over 50,000 residents"
+       town_table
+       .filter(pl.col("population") > 50_000)
+       .sort("average_single_family_bill_dollars", descending=True)
+       .head(5)
         )
-    )
+
+        # Draw a horizontal bar chart.
+    top_five_bill_chart = mo.ui.altair_chart(
+       top_five_bills.plot.bar(
+           y=alt.Y(
+               "name",
+               sort="-x",
+               title="Town"
+           ),
+           x=alt.X(
+               "average_single_family_bill_dollars",
+               title="Average annual single-family property tax bill ($)",
+               axis=alt.Axis(format="$,.0f")
+           )
+       ).properties(
+           title="Top 5 property tax bills among towns with over 50,000 residents"
+       )
+        )
 
     top_five_bill_chart
     return
