@@ -698,19 +698,18 @@ def _(requests):
     # post function allows you to post information ```python
     # to the specified URL with the given headers, JSON payload, and timeout.
     # The response object contains the status code and body of the response.
-
     return
 
 
 @app.cell
-def _(requests):
-    for i in range(1000):
-        test_reply = requests.post(
-            "https://oim.zhili.dev/message",
-            json={"message": f"test message {i}"},
-            timeout=10,
-        )
-        print(i, test_reply.status_code)
+def _():
+    # for i in range(1000):
+    #     test_reply = requests.post(
+    #         "https://oim.zhili.dev/message",
+    #         json={"message": f"test message {i}"},
+    #         timeout=10,
+    #     )
+    #     print(i, test_reply.status_code)
     # For loop to keep sending infor on a server. Attack a server
     return
 
