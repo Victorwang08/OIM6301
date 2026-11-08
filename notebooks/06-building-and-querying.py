@@ -224,6 +224,72 @@ def _(mo):
     return
 
 
+@app.cell
+def _(database, duckdb):
+    with duckdb.connect(database) as _con:
+        _con.execute("""
+            CREATE TABLE town_bills (
+                town VARCHAR NOT NULL REFERENCES towns(name),
+                fiscal_year INTEGER NOT NULL,
+                average_single_family_bill_dollars INTEGER
+                    CHECK (average_single_family_bill_dollars >= 0),
+                PRIMARY KEY (town, fiscal_year)
+            )
+        """)
+
+        _con.execute("""
+            INSERT INTO town_bills
+            VALUES
+                ('Wellesley', 2024, 18690),
+                ('Wellesley', 2025, 19792)
+        """)
+
+        try:
+            _con.execute("""
+                INSERT INTO town_bills
+                VALUES ('Wellesley', 2024, 18690)
+            """)
+        except duckdb.ConstraintException:
+            print("PASS: Duplicate town and year rejected.")
+
+        try:
+            _con.execute("""
+                INSERT INTO town_bills
+                VALUES ('NotARealTown', 2024, 1000)
+            """)
+        except duckdb.ConstraintException:
+            print("PASS: Town not in towns rejected.")
+
+        _town_bills_result = _con.sql("""
+            SELECT *
+            FROM town_bills
+            ORDER BY town, fiscal_year
+        """).pl()
+
+    _town_bills_result
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -257,6 +323,60 @@ def _(mo):
 
     **Going further.** Find a rule the scenario of your database project states that a constraint cannot hold, and write the query that checks it instead.
     """)
+    return
+
+
+@app.cell
+def _(database, duckdb):
+    # 1. Duplicate town name
+    try:
+        with duckdb.connect(database) as _con:
+            _con.execute("""
+                INSERT INTO towns
+                VALUES ('Wellesley', 'Norfolk', 100, 1000, 1000)
+            """)
+    except duckdb.ConstraintException as _error:
+        print("1. Duplicate town name:")
+        print(str(_error).splitlines()[0])
+        print()
+
+    # 2. Population of zero
+    try:
+        with duckdb.connect(database) as _con:
+            _con.execute("""
+                INSERT INTO towns
+                VALUES ('ZeroPopulationTown', 'Norfolk', 0, 1000, 1000)
+            """)
+    except duckdb.ConstraintException as _error:
+        print("2. Population of zero:")
+        print(str(_error).splitlines()[0])
+        print()
+
+    # 3. County that does not exist
+    try:
+        with duckdb.connect(database) as _con:
+            _con.execute("""
+                INSERT INTO towns
+                VALUES ('NonexistentCountyTown', 'Atlantis', 100, 1000, 1000)
+            """)
+    except duckdb.ConstraintException as _error:
+        print("3. County that does not exist:")
+        print(str(_error).splitlines()[0])
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
     return
 
 
