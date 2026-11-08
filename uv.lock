@@ -978,6 +978,7 @@ name = "oim6301"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "duckdb" },
     { name = "marimo", extra = ["recommended"] },
     { name = "matplotlib" },
     { name = "pandas" },
@@ -986,6 +987,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "duckdb", specifier = ">=1.5.5" },
     { name = "marimo", extras = ["recommended"], specifier = ">=0.24.2" },
     { name = "matplotlib", specifier = ">=3.11.2" },
     { name = "pandas", specifier = ">=3.0.6" },

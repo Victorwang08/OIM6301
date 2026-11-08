@@ -1,0 +1,21 @@
+product_id,product_name,category,price,cost,available_today
+1,Espresso,coffee,3.00,0.90,True
+2,Americano,coffee,3.50,1.00,True
+3,Latte,coffee,5.00,1.80,True
+4,Cappuccino,coffee,4.75,1.70,True
+5,Mocha,coffee,5.50,2.10,True
+6,Cold Brew,coffee,4.50,1.40,True
+7,Black Tea,tea,3.00,0.70,True
+8,Green Tea,tea,3.25,0.80,True
+9,Chai Latte,tea,5.00,1.80,True
+10,Matcha Latte,tea,5.50,2.20,True
+11,Croissant,food,3.75,1.50,True
+12,Blueberry Muffin,food,3.50,1.30,True
+13,Bagel,food,3.00,1.10,True
+14,Breakfast Sandwich,food,6.50,2.80,True
+15,Cookie,food,2.50,0.90,True
+16,Hot Chocolate,other,4.00,1.50,True
+17,Bottled Water,other,2.00,0.60,True
+18,Orange Juice,other,3.50,1.40,True
+19,Seasonal Tea,tea,4.00,1.20,True
+20,Seasonal Brownie,food,4.50,1.80,False
