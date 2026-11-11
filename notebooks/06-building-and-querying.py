@@ -77,7 +77,7 @@ def _(mo, pl, requests):
     county_rows = pl.DataFrame(
         requests.get("https://oim.zhili.dev/ma/counties", timeout=10).json()
     )
-
+    # pl.DataFrame是整理成表格
     town_columns = [
         "name",
         "county",
@@ -86,8 +86,11 @@ def _(mo, pl, requests):
         "average_single_family_bill_dollars",
     ]
     _towns_file = mo.notebook_dir().parent / "data" / "ma-towns.csv"
+    # mo.notebook_dir()， mo is Marimo. This is the 这一句是用于取得当前笔记本所在目录。
     if _towns_file.exists():
+    #如果towns_file存在
         town_rows = pl.read_csv(_towns_file).select(town_columns)
+    # 使用 Polars 读取指定 CSV 文件，得到一张 DataFrame。相当于把这份 CSV 表格打开并读入 Python。
     else:
         _records = []
         for _county in county_rows["name"]:
@@ -451,6 +454,17 @@ def _(ask):
     return
 
 
+@app.cell
+def _(ask):
+    ask("""
+    SELECT county, count(*) AS town_count, sum(population) AS total_pop, round(avg(population)) AS avg_pop, round(avg(average_single_family_bill_dollars),2) AS avg_bill
+    FROM towns
+    GROUP BY county
+    ORDER BY total_pop DESC
+    """)
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -467,6 +481,21 @@ def _(ask):
         WHERE average_single_family_bill_dollars > 10000
         GROUP BY county
         HAVING count(*) > 5
+    --this is shows counties that have more than 5 towns
+        ORDER BY towns DESC
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    ask("""
+        SELECT county, count(*) AS towns
+        FROM towns
+        WHERE average_single_family_bill_dollars > 10000
+        GROUP BY county
+        HAVING county LIKE '%sex'
+    --this is shows counties that is like sex(name have sex those letters)
         ORDER BY towns DESC
     """)
     return
@@ -499,6 +528,7 @@ def _(mo):
 @app.cell
 def _(ask):
     ask("SELECT * FROM high_bill_towns_by_county ORDER BY towns DESC")
+    # this table does not exist. but we craeted a view before and we can use it here
     return
 
 
