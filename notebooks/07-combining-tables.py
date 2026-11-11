@@ -159,6 +159,7 @@ def _(ask, towns_database):
         ORDER BY t.population DESC
         LIMIT 5
     """)
+    # joint is also inner joint
     return
 
 
@@ -231,12 +232,12 @@ def _(mo):
 @app.cell
 def _(ask, towns_database):
     ask(towns_database, """
-        SELECT c.name
+        SELECT c.name, t.name, t.average_single_family_bill_dollars
         FROM counties AS c
         LEFT JOIN towns AS t
             ON t.county = c.name AND t.average_single_family_bill_dollars > 15000
         WHERE t.name IS NULL
-        ORDER BY c.name
+        ORDER BY t.average_single_family_bill_dollars DESC
     """)
     return
 
@@ -350,6 +351,29 @@ def _(ask, northwind_database):
         SELECT
             (SELECT count(*) FROM (SELECT OrderID FROM orders GROUP BY OrderID HAVING count(*) > 1)) AS repeated_in_orders,
             (SELECT count(*) FROM (SELECT OrderID FROM order_details GROUP BY OrderID HAVING count(*) > 1)) AS repeated_in_order_details
+    """)
+    return
+
+
+@app.cell
+def _():
+    # In class Practice
+    return
+
+
+@app.cell
+def _(ask, northwind_database):
+    ask(northwind_database, """ 
+    SELECT
+        c.CategoryName,
+        COUNT(p.ProductID) AS product_count
+    FROM categories AS c
+    LEFT JOIN products AS p
+        ON c.CategoryID = p.CategoryID
+    GROUP BY
+        c.CategoryID,
+        c.CategoryName
+    ORDER BY product_count DESC;
     """)
     return
 
