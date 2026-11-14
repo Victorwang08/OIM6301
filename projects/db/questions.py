@@ -611,9 +611,11 @@ def _(ask, q2):
     return
 
 
-@app.cell
-def _():
-    #For Question 2, the category totals equal the independently calculated product-plus-option totals: $21,334.75 in revenue and $7,952.15 in cost.
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    For Question 2, the category totals equal the independently calculated product-plus-option totals: $21,334.75 in revenue and $7,952.15 in cost.
+    """)
     return
 
 
@@ -649,9 +651,11 @@ def _(ask, q5):
     return
 
 
-@app.cell
-def _():
-    #For Question 5, 40 total members minus 36 members who ordered gives 4 non-buyers, matching the four returned rows and the member IDs 37–40 deliberately left without orders in Part A.
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    For Question 5, 40 total members minus 36 members who ordered gives 4 non-buyers, matching the four returned rows and the member IDs 37–40 deliberately left without orders in Part A.
+    """)
     return
 
 
@@ -665,13 +669,15 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
-    # One piece of AI output I did not accept is on the going further part, the visualization it created it not sorted. So I add it on my own. 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    One piece of AI output I did not accept is on the going further part, the visualization it created it not sorted. So I add it on my own.
 
-    # About the code in general. I reviewed the code myself first to see if any outstanding mistakes. And then ask my agent to write verification checks code seperately to make sure.
+    About the code in general. I reviewed the code myself first to see if any outstanding mistakes. And then ask my agent to write verification checks code seperately to make sure.
 
-    # I also changed the wording in Question 2. The term “margin” was confusing to me because reader may not sure whether it meant a dollar amount or a percentage. So I changed the wording to “margin percentage” to make the meaning clearer. Also, I organize the notebook layout myself. The original headings and structure AI gave me made it difficult to follow, so I reorganized the presentation into six clear sections and made the question list more compact.
+    I also changed the wording in Question 2. The term “margin” was confusing to me because reader may not sure whether it meant a dollar amount or a percentage. So I changed the wording to “margin percentage” to make the meaning clearer. Also, I organize the notebook layout myself. The original headings and structure AI gave me made it difficult to follow, so I reorganized the presentation into six clear sections and made the question list more compact.
+    """)
     return
 
 
@@ -695,9 +701,11 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
-    # I expect the joins will produce 3,364 rows before grouping. The CSV files have 1,932 selected-option records and 1,432 order lines with no options. A line with options will appear once for each option. A line without options will still appear once because I will use a LEFT JOIN. So my prediction is 1,932 + 1,432 = 3,364 rows. Joining the product and option details should not add more rows because their IDs are unique. Actual join count and explanation: To be added after this prediction is committed. Meaning of one final result row: To be added after answering the question.
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    I expect the joins will produce 3,364 rows before grouping. The CSV files have 1,932 selected-option records and 1,432 order lines with no options. A line with options will appear once for each option. A line without options will still appear once because I will use a LEFT JOIN. So my prediction is 1,932 + 1,432 = 3,364 rows. Joining the product and option details should not add more rows because their IDs are unique. Actual join count and explanation: To be added after this prediction is committed. Meaning of one final result row: To be added after answering the question.
+    """)
     return
 
 
@@ -718,19 +726,23 @@ def _(ask):
     return
 
 
-@app.cell
-def _():
-    # Actual join count and explanation:
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Actual join count and explanation:
 
-    #The joins produced 3,364 rows, matching my prediction. The 1,932 selected-option records each produce one row, and the 1,432 order lines without options each remain as one row because of the LEFT JOIN. Joining product and option details does not create extra matches because their IDs are unique.
+    The joins produced 3,364 rows, matching my prediction. The 1,932 selected-option records each produce one row, and the 1,432 order lines without options each remain as one row because of the LEFT JOIN. Joining product and option details does not create extra matches because their IDs are unique.
+    """)
     return
 
 
-@app.cell
-def _():
-    # Meaning of one final result row:
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Meaning of one final result row:
 
-    # One row in the final result for Question 2 represents one menu category. It shows the total revenue, cost, gross profit, and margin percentage for that category across the recorded data, including the options attached to its products.
+    One row in the final result for Question 2 represents one menu category. It shows the total revenue, cost, gross profit, and margin percentage for that category across the recorded data, including the options attached to its products.
+    """)
     return
 
 
@@ -768,9 +780,11 @@ def _(q2):
     return
 
 
-@app.cell
-def _():
-    # The chart shows that coffee generated the highest gross profit ($5,358.15), followed by tea ($3,344.35), food ($2,957.45), and other products ($1,722.65). This makes the differences between categories easier to compare than reading the table alone.
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The chart shows that coffee generated the highest gross profit ($5,358.15), followed by tea ($3,344.35), food ($2,957.45), and other products ($1,722.65). This makes the differences between categories easier to compare than reading the table alone.
+    """)
     return
 
 
@@ -782,10 +796,12 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
-    # 5 hour in total. 
-    # I spend 1 hour for Part A, and then Another 1 hour to fix Part A. And 3 hours for part B.
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    5 hour in total.
+    I spend 1 hour for Part A, and then Another 1 hour to fix Part A. And 3 hours for part B.
+    """)
     return
 
 
