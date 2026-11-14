@@ -100,26 +100,42 @@ One row represents one payment toward an order, including its method and dollar 
 
 ## 4. Design Choices
 
-### Member Identification
-I used member_id as the primary key instead of a mobile number because a member can change their phone number. Their ID stays the same, keeping their previous orders connected to the correct member.
+### 1. Keys
 
-### Non-Member Orders
-The member_id in the orders table can be NULL because customers do not need to be loyalty members to place an order.
+I chose member_id as the primary key instead of mobile_number.
+A member can change their mobile number, while member_id stays
+the same and keeps their previous orders connected.
+Email is optional, so it is not suitable as the primary key.
 
-### Historical Prices
-Order lines and line options store the price charged per unit at the time of purchase. This keeps historical revenue accurate even if menu prices change later.
+### 2. Optional Relationships
 
-### Options on Order Lines
-The line_options table connects order lines with their selected options. Its combined primary key, line_id and option_id, prevents the same option from appearing twice on one line. Option charges are multiplied by the quantity on the order line.
+An order can have no member because non-members can buy too.
+A member can have no orders because joining does not require
+a purchase. A product can have no sales. An order line can
+have no options, and an option can exist without being selected.
 
-### Multiple Payments
-Payments are stored in a separate table because one order can have multiple payments, such as part by card and part with points. All payment amounts are recorded in dollars, including points payments. Revenue is calculated from order lines and options, rather than payment methods.
+Each order line must belong to exactly one order and one product.
+Each line option must belong to exactly one line and one option.
+Each payment must belong to exactly one order.
 
-### Cost Assumption
-I assumed that product and option costs remained constant during the analysis period. Costs are stored in the products and options tables, without a separate history of cost changes. Each option's revenue and cost are assigned to the category of the product on its order line.
+### 3. Rules Checked with Queries
 
-### Data Rules and Validation
-Primary keys identify records, and foreign keys keep related records connected. CHECK constraints enforce rules such as positive quantities, positive payments and product prices that are not below cost. A separate query checks that every order has lines and payments and that its payment total matches its order total. Order totals and payment totals are calculated separately to avoid double-counting.
+The tables use primary keys, foreign keys, NOT NULL and CHECK
+constraints to enforce rules within the database.
 
-### Simulated Data
-The data generator uses a fixed random seed of 42 and a reference date of November 8, 2026, so its results can be reproduced. It creates 40 members, 20 products, 8 options and 1,000 orders, together with their order lines, selected options and payments. The data includes non-member orders, members who have never ordered, products with no sales, lines without options and orders partly paid with points.
+These constraints do not ensure that every order has a line
+and a payment, or that its payment total equals its order total.
+I check those conditions with a query, totaling order lines
+and options separately from payments to avoid double-counting.
+
+Transaction records store the prices charged at purchase.
+I assume product and option costs remain constant during
+the analysis period.
+
+### 4. A Design Detail I Checked
+
+I checked that the ERD allows an order to have zero or one
+member and a member to have zero or many orders. This matches
+the scenario because non-members can buy, and members can
+join without ordering. The nullable member_id in orders
+matches the optional member relationship.
