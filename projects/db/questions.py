@@ -663,8 +663,6 @@ def _(mo):
 def _(mo):
     mo.md("""
     ## 3. Working With the Agent
-
-    The collaboration and verification notes will be added here.
     """)
     return
 
@@ -801,8 +799,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    5 hour in total.
-    I spend 1 hour for Part A, and then Another 1 hour to fix Part A. And 3 hours for part B.
+    5
     """)
     return
 
