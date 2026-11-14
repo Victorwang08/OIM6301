@@ -674,6 +674,8 @@ def _(mo):
     mo.md(r"""
     One piece of AI output I did not accept is on the going further part, the visualization it created it not sorted. So I add it on my own.
 
+    This change is in the Going Further chart cell, where I added _sorted_q2 = q2.sort("profit", descending=True). I checked the bars against the profit values in Question 2 and confirmed that they appear from highest to lowest.
+
     About the code in general. I reviewed the code myself first to see if any outstanding mistakes. And then ask my agent to write verification checks code seperately to make sure.
 
     I also changed the wording in Question 2. The term “margin” was confusing to me because reader may not sure whether it meant a dollar amount or a percentage. So I changed the wording to “margin percentage” to make the meaning clearer. Also, I organize the notebook layout myself. The original headings and structure AI gave me made it difficult to follow, so I reorganized the presentation into six clear sections and made the question list more compact.
