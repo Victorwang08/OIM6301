@@ -1,6 +1,6 @@
 # Babson Bean Café Database Project
 
-## 1. Scenario
+## 1. The Scenario
 
 I chose Scenario C: Babson Bean Café.
 
@@ -11,7 +11,7 @@ to connect members, menu products, drink options, orders and payments.
 The café wants to understand what sells, which options contribute
 to revenue and margin, and who its regular customers are.
 
-## 2. Entity-Relationship Diagram
+## 2. The ERD
 ```mermaid
 erDiagram
     MEMBERS |o--o{ ORDERS : places
@@ -74,7 +74,7 @@ erDiagram
         decimal amount
     }
 ```
-## 3. What One Row Represents in Each Table
+## 3. What One Row Means
 
 ### MEMBERS
 One row represents one loyalty member, including their contact information, join date and current points balance.
