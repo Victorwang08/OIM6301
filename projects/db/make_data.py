@@ -111,15 +111,32 @@ order_lines = []
 line_options = []
 payments = []
 
-# Fixed reference date for reproducible project data.
-reference_date = datetime(2026, 11, 8)
+# Analyze the 12 months before this date.
+# The start is included; the as_of date is excluded.
+as_of = datetime(2026, 11, 8)
+period_start = datetime(2025, 11, 8)
+days_in_period = (as_of - period_start).days
 
 for order_id in range(1, 1001):
-    order_time = reference_date - timedelta(
-        days=random.randint(1, 180)
-    )
+    day_offset = random.randint(0, days_in_period - 1)
+
+    # Ensure the data reaches both ends of the period.
+    if order_id == 1:
+        day_offset = 0
+    elif order_id == 2:
+        day_offset = days_in_period - 1
+
+    order_time = period_start + timedelta(days=day_offset)
+
+    # More orders around breakfast and lunch.
+    order_hour = random.choices(
+        population=list(range(7, 19)),
+        weights=[5, 12, 15, 10, 8, 13, 12, 8, 6, 5, 4, 2],
+        k=1,
+    )[0]
+
     order_time = order_time.replace(
-        hour=random.randint(7, 18),
+        hour=order_hour,
         minute=random.randint(0, 59),
     )
 
@@ -213,7 +230,30 @@ for order_id in range(1, 1001):
         "amount": dollars(order_total - points_amount),
     })
 
+# Intentionally break the payment-total rule for exactly two orders.
+# All payment amounts remain positive.
+for payment in payments:
+    if payment["method"] != "points":
+        if payment["order_id"] == 1:
+            amount_cents = round(float(payment["amount"]) * 100)
+            payment["amount"] = dollars(amount_cents + 100)
 
+            print(
+                "Intentional mismatch: order_id=1,",
+                f"payment_id={payment['payment_id']},",
+                "payment total is $1.00 too high.",
+            )
+
+        elif payment["order_id"] == 2:
+            amount_cents = round(float(payment["amount"]) * 100)
+            payment["amount"] = dollars(amount_cents + 200)
+
+            print(
+                "Intentional mismatch: order_id=2,",
+                f"payment_id={payment['payment_id']},",
+                "payment total is $2.00 too high.",
+            )
+            
 # Write all seven CSV files.
 save_csv("members.csv", members)
 save_csv("products.csv", products)
