@@ -1,5 +1,6 @@
 import marimo
 
+__generated_with = "0.24.2"
 app = marimo.App(width="medium")
 
 
@@ -17,7 +18,7 @@ def _():
         with duckdb.connect(database, read_only=True) as _con:
             return _con.sql(sql).pl()
 
-    return mo, duckdb, pl, plt, database, data_dir, ask
+    return ask, data_dir, database, duckdb, mo, pl, plt
 
 
 @app.cell
@@ -32,7 +33,7 @@ def _(mo):
 
 
 @app.cell
-def _(database, data_dir, duckdb):
+def _(data_dir, database, duckdb):
     # Delete the old database before building a new one.
     if database.exists():
         database.unlink()
@@ -157,7 +158,7 @@ def _(database, data_dir, duckdb):
 
     build_done = True
     print("Database rebuilt from CSV files. Connection closed.")
-    return (build_done,)
+    return
 
 
 @app.cell
@@ -192,7 +193,7 @@ def _(mo):
 
 
 @app.cell
-def _(ask, build_done):
+def _(ask):
     ask("""
         WITH payment_totals AS (
             SELECT
@@ -281,7 +282,7 @@ def _(mo):
 
 
 @app.cell
-def _(ask, build_done):
+def _(ask):
     ask("""
         SELECT 'members' AS table_name, COUNT(*) AS row_count
         FROM members
@@ -314,7 +315,7 @@ def _(mo):
 
 
 @app.cell
-def _(database, duckdb, build_done):
+def _(database, duckdb):
     try:
         with duckdb.connect(database) as _con:
             _con.execute("""
@@ -335,7 +336,6 @@ def _(database, duckdb, build_done):
     except duckdb.ConstraintException as _error:
         print("Expected refusal:")
         print(_error)
-
     return
 
 
@@ -352,7 +352,7 @@ def _(mo):
 
 
 @app.cell
-def _(ask, build_done):
+def _(ask):
     ask("SELECT COUNT(*) AS member_count FROM members")
     return
 
@@ -368,7 +368,7 @@ def _(mo):
 
 
 @app.cell
-def _(ask, build_done):
+def _(ask):
     ask("""
         SELECT member_id
         FROM members
@@ -393,7 +393,7 @@ def _(mo):
 
 
 @app.cell
-def _(ask, build_done):
+def _(ask):
     ask("""
         SELECT product_id, product_name
         FROM products
@@ -426,7 +426,7 @@ def _(mo):
 
 
 @app.cell
-def _(ask, build_done):
+def _(ask):
     ask("""
         SELECT
             CAST(order_datetime AS DATE) AS sales_date,
